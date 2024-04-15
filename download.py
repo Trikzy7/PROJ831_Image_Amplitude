@@ -14,24 +14,37 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Download image data in .zip format from ASF')
 
     # Arguments 
-    parser.add_argument('--outputPath', help='Absolute Path to directory where the downloaded files will be saved', required=True)
+    # Downloader Arguments
+    parser.add_argument('--outputPathZip', help='Absolute Path to directory where the downloaded files .zip will be saved', required=True)
     parser.add_argument('--username', help='Username to authentification in ASF', required=True)
     parser.add_argument('--password', help='Password to authentification in ASF', required=True)
     parser.add_argument('--polygon', help='Polygon you want images from', required=True)
     parser.add_argument('--dateStart', help='Begining of the period you want download with format YYYY-MM-DD', required=True)
     parser.add_argument('--dateEnd', help='End of the period you want download with format YYYY-MM-DD', required=True)
 
+    # Processor Arguments
+    parser.add_argument('--pathGpt', help='End of the period you want download with format YYYY-MM-DD', required=True)
+    parser.add_argument('--pathGraph', help='Absolute Path to directory where the graph .xml is', required=True)
+    parser.add_argument('--outputPathTif', help='Absolute Path to directory where the files .tif will be saved after the process', required=True)
+
+
 
     # Analyser Arguments 
     args = parser.parse_args()
 
-    # Get the parameters
-    output_path = args.outputPath
+    # -- Get the parameters
+    # Downloader Arguments
+    output_path_zip = args.outputPath
     username = args.username
     password = args.password
     polygon = args.polygon
     date_start = args.dateStart
     date_end = args.dateEnd
+
+    # Processor Arguments 
+    path_gpt = args.pathGpt
+    path_graph = args.pathGraph
+    output_path_tif = args.outputPathTif
 
 
     datetime_format = '%Y-%m-%d'
@@ -54,4 +67,4 @@ if __name__ == '__main__':
     # results_with_zips[0:1].download(path='./downloads7', session=user_pass_session)
     
     for result_zip in tqdm(results_with_zips):
-        result_zip.download(path=output_path, session=user_pass_session)
+        result_zip.download(path=output_path_zip, session=user_pass_session)
