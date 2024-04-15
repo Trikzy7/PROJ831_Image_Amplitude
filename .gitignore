@@ -1,2 +1,5 @@
 downloads/**
 **/node_modules
+
+**/imagesZIP
+**/imagesTIF
