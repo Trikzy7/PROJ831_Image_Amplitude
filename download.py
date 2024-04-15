@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # -- Get the parameters
     # Downloader Arguments
-    output_path_zip = args.outputPath
+    output_path_zip = args.outputPathZip
     username = args.username
     password = args.password
     polygon = args.polygon
