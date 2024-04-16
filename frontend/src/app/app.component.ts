@@ -24,6 +24,21 @@ export class AppComponent implements OnInit {
     //   ).subscribe((data) => {
     //     console.log(data);
     //   })
+
+    // this.imageService.getListDatesImagesBetweenDates(
+    //   'polygon((6.0502 45.7566,6.2397 45.7566,6.2397 45.9662,6.0502 45.9662,6.0502 45.7566))', 
+    //   '2023-03-01', 
+    //   '2023-03-31'
+    //   ).subscribe((data) => {
+    //     console.log(data);
+    //   })
+
+    this.imageService.getNameZipFromPolygonAndDate(
+      'polygon((6.0502 45.7566,6.2397 45.7566,6.2397 45.9662,6.0502 45.9662,6.0502 45.7566))', 
+      '2023-03-27'
+      ).subscribe((data) => {
+        console.log(data);
+    })
   }
 }
 
