@@ -34,13 +34,42 @@ if __name__ == '__main__':
     # Initialize the dictionnary
     params = {}
 
-    # polygon = "POLYGON ((6.546999931335449 45.98400115966797, 5.4710001945495605 45.98400115966797, 5.4710001945495605 45.64099884033203, 6.546999931335449 45.64099884033203, 6.546999931335449 45.98400115966797, 6.546999931335449 45.98400115966797))"
+    grandPolygon = polygon
+
+    # transformer le polygon en liste de float
+    grandPolygon = grandPolygon.replace("POLYGON((", "").replace("))", "").replace(",", " ").split(" ")
+    grandPolygon = [float(x) for x in grandPolygon]
+
+    # mettre par couple de deux valeurs sous forme de liste
+    grandPolygon = [[grandPolygon[i], grandPolygon[i + 1]] for i in range(0, len(grandPolygon), 2)]
+    # %%
+    grandPolygon[0][0] = grandPolygon[0][0] - 0.1
+    grandPolygon[0][1] = grandPolygon[0][1] - 0.1
+
+    grandPolygon[1][0] = grandPolygon[1][0] + 0.1
+    grandPolygon[1][1] = grandPolygon[1][1] - 0.1
+
+    grandPolygon[2][0] = grandPolygon[2][0] + 0.1
+    grandPolygon[2][1] = grandPolygon[2][1] + 0.1
+
+    grandPolygon[3][0] = grandPolygon[3][0] - 0.1
+    grandPolygon[3][1] = grandPolygon[3][1] + 0.1
+
+    grandPolygon[4][0] = grandPolygon[0][0]
+    grandPolygon[4][1] = grandPolygon[0][1]
+
+
+    # reformer le polygon de base avec ces nouvelles valeurs
+    grandPolygon = "POLYGON((" + ", ".join([str(x[0]) + " " + str(x[1]) for x in grandPolygon]) + "))"
+
+
     # Apply the graph on each image
     for f in tqdm(listFiles):
         # Set the parameters for the current file
         params["inputFile"] = output_path_zip + f
         params["outputFile"] = output_path_tif + f.replace(".zip", ".tif")
-        params["polygon"] = "\"" + polygon + "\""
+        params["polygon1"] = "\"" + grandPolygon + "\""
+        params["polygon2"] = "\"" + polygon + "\""
 
         # Construct the optionnal parameter command line
         paramLine = ""
