@@ -1,0 +1,86 @@
+#save, #delete {
+  margin-top: 20px;
+  margin-right: 10px;
+  padding: 10px 20px;
+  border: 1px solid #7300ff;
+  border-radius: 5px;
+  background-color: #ffffff;
+  cursor: pointer;
+  color: #7300ff;
+  font-weight: bold;
+  text-align: center;
+}
+
+#save:hover, #delete:hover {
+  background-color: #7300ff;
+  color: #f8dcfd;
+}
+
+#user-inputs label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+#buttons {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+H2, #titreASF {
+  color: #7300ff;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  background-image: linear-gradient(#ffffff, #ffffff);
+}
+
+.input-group {
+  width: 100%;
+
+  @supports (mix-blend-mode: darken) {
+    position: relative;
+    &__label {
+      position: absolute;
+      left: 2em;
+      top: -0.60em;
+      background: #fff;
+    }
+  }
+
+  &__label {
+    padding: 0 0.1em;
+    text-transform: uppercase;
+    font-size: 0.850em;;
+    color: #7300ff;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  &__input {
+    color: #000;
+    height: calc(1em + 1.6em + 0.5em);
+    width: 100%;
+    padding: 0.8em 1em;
+    border: 0.25em solid transparent;
+    background-image: linear-gradient(#ffffff, #ffffff),
+    linear-gradient(120deg, #8c00ff 0%, #0ff 50%, #e500ff 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    border-radius: 1.8em;
+    background-size: 200% 100%;
+    transition: background-position 0.8s ease-out;
+    font-size: 0.850em;
+
+    &:hover {
+      background-position: 100% 0;
+    }
+
+    &:focus {
+      outline: 2px dashed #7300ff;
+    }
+  }
+}
