@@ -1,3 +1,51 @@
 #my-map{
   height: 100vh;
+  position: relative;
+}
+
+#search-location{
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 300px;
+}
+
+#search{
+  border:1px solid #7300ff;
+  border-radius: 30px;
+}
+
+#search-button{
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  background-color: #7300ff;
+  cursor: pointer;
+  border-radius: 1.5rem;
+  border: 1px solid #7300ff;
+  font-weight: bolder;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  width: auto;
+  height: auto;
+}
+
+#search-button:hover{
+  background-color: rgb(255, 255, 255);
+  color: #7300ff;
+  border: 1px solid #7300ff;
+  cursor: pointer;
+  font-weight: bolder;
+}
+
+@media only screen and (max-width: 700px){
+  #search-location{
+    width: 75%;
+  }
+  #search-button{
+    width: 30%;
+    font-size: 80%;
+  }
 }

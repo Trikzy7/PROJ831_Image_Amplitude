@@ -12,27 +12,50 @@ import {defaults as defaultControls, Zoom} from 'ol/control';
 import { PolygonService } from "../services/polygon.service";
 import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
+import {HttpClient} from "@angular/common/http";
+import {fromLonLat} from 'ol/proj';
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   standalone: true,
+  imports: [
+    NgIf
+  ],
   styleUrls: ['./map.component.scss']
 })
+
 export class MapComponent implements AfterViewInit {
   map!: Map;
   draw!: Draw;
   vectorLayer!: VectorLayer<any>;
   polygon!: string;
 
-  constructor(private polygonService: PolygonService) {}
+  constructor(private polygonService: PolygonService, private http: HttpClient) {}
+
+  searchLocation() {
+    const searchInput = (<HTMLInputElement>document.getElementById('search')).value;
+    this.http.get(`https://nominatim.openstreetmap.org/search?format=json&q=${searchInput}`).subscribe((data: any) => {
+      if (data && data[0] && data[0].lat && data[0].lon) {
+        this.zoomToLocation(data[0].lat, data[0].lon);
+      }
+    });
+  }
+
+  zoomToLocation(lat: string, lon: string) {
+    const view = this.map.getView();
+    view.animate({
+      center: fromLonLat([parseFloat(lon), parseFloat(lat)]),
+      zoom: 10
+    });
+  }
 
   ngAfterViewInit() {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== 'undefined' && typeof window !== "undefined") {
       this.initMap();
     }
   }
-
   private initMap() {
     this.map = new Map({
       target: 'my-map',
@@ -136,5 +159,6 @@ export class MapComponent implements AfterViewInit {
     const polygonExtent = polygonGeometry.getExtent();
     this.map.getView().fit(polygonExtent, { padding: [100, 100, 100, 100] });
   }
+
 
 }
