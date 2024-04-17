@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ImageService } from './services/image.service';
+import {InfosComponent} from "./infos/infos.component";
+import {ConfigurationMapComponent} from "./configuration-map/configuration-map.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, InfosComponent, ConfigurationMapComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

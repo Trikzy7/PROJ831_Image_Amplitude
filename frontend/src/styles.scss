@@ -1,1 +1,37 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.zoomInOut-out, .zoomInOut-in{
+  background-color: #ffffff;
+  border: 1px solid #7300ff;
+  border-radius: 5px;
+  margin: 5px;
+  cursor: pointer;
+  display: flex;
+  color: #7300ff;
+}
+.zoomInOut-out {
+  padding: 1px 8px;
+}
+
+.zoomInOut-in {
+  padding: 1px 7.5px;
+}
+
+.zoomInOut-out:hover, .zoomInOut-in:hover{
+  background-color: #7300ff;
+  color: #f8dcfd;
+}
+
+//.ol-viewport{
+//  box-shadow: #b4b4b4 0px 0px 20px 0px;
+//  margin: 10px;
+//  border-radius: 10px;
+//}
+
