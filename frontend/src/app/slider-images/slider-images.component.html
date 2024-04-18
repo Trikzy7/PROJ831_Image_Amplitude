@@ -2,6 +2,7 @@
     <div id="image-container" #imageContainer>
         <img id="image" [src]="imageSrc" alt="Votre image" #sliderImage>
         <div id="overlay" #overlay></div>
+        <div id="cercle" #cercle style="position: absolute"></div>
     </div>
     <div class="slider-container">
         <input type="range" min="1" max="4" value="1" step="1" class="slider" id="mySlider" (input)="changeImage($event.target)">
