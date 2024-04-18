@@ -36,7 +36,7 @@ export class InfosComponent implements OnInit {
     });  }
 
   onSubmit(f : NgForm) {
-    this.noConform = (f.value.gptPath == null || f.value.username == null || f.value.password == null || f.value.polygon == null);
+    this.noConform = (f.value.gptPath == null || f.value.username == null || f.value.password == null || f.value.polygon == null) || (f.value.gptPath == "" || f.value.username == "" || f.value.password == "" || f.value.polygon == "");
     this.submit = true;
     console.log(f.value)
   }
