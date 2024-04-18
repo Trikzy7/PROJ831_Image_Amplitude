@@ -3,11 +3,13 @@ import { RouterOutlet } from '@angular/router';
 import { ImageService } from './services/image.service';
 import {InfosComponent} from "./infos/infos.component";
 import {ConfigurationMapComponent} from "./configuration-map/configuration-map.component";
+import {SliderImagesComponent} from "./slider-images/slider-images.component";
+import {GraphAmplitudeComponent} from "./graph-amplitude/graph-amplitude.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, InfosComponent, ConfigurationMapComponent],
+  imports: [RouterOutlet, InfosComponent, ConfigurationMapComponent, SliderImagesComponent, GraphAmplitudeComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
