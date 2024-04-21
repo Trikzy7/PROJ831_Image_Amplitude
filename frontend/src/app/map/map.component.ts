@@ -1,4 +1,4 @@
-import {Component, AfterViewInit, OnInit} from '@angular/core';
+import {Component, AfterViewInit, OnInit, ChangeDetectorRef} from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
@@ -36,12 +36,11 @@ export class MapComponent implements AfterViewInit, OnInit{
   map!: Map;
   draw!: Draw;
   vectorLayer!: VectorLayer<any>;
-  polygon!: string;
+  polygon = "";
   map_dashboard!: Map;
   dashboard!: boolean;
 
-  constructor(private polygonService: PolygonService, private http: HttpClient, protected dashboardService: DashboardService) {}
-
+  constructor(private polygonService: PolygonService, private http: HttpClient, protected dashboardService: DashboardService, private cdr: ChangeDetectorRef) {}
   ngOnInit() {
     this.dashboard = this.dashboardService.getIsOnDashboard();
   }
@@ -51,12 +50,13 @@ export class MapComponent implements AfterViewInit, OnInit{
       this.initMap();
     }
 
-    if (this.polygon){
+    if (this.polygon !== ""){
       this.polygonService.polygon$.subscribe(polygon => {
         this.polygon = polygon;
         if (this.map_dashboard) {
           this.drawPolygon(polygon);
         }
+        this.cdr.detectChanges();
       });
     }
   }
