@@ -1,0 +1,66 @@
+#content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-gap: 10px;
+  margin: 20px;
+}
+
+#header {
+  grid-column: 1 / span 2;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.box {
+  box-shadow: #b4b4b4 0 0 20px 0;
+  border-radius: 10px;
+  background-color: white;
+  align-content: center;
+  text-align: -webkit-center;
+}
+
+#graph {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+#map {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+#slider {
+  grid-column: 2;
+  grid-row: 2 / span 2;
+}
+
+#back {
+  border: 1px solid #7300ff;
+  border-radius: 5px;
+  background-color: #ffffff;
+  cursor: pointer;
+  color: #7300ff;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  justify-content: space-around;
+}
+
+#back:hover{
+  background-color: #7300ff;
+  color: #f8dcfd;
+}
+
+#back-icon:hover {
+  background-image: url('/Users/carlynebarrachin/Documents/Polytech/FI4/S8/PROJ831/PROJ831_Image_Amplitude/frontend/src/assets/Back_Arrow_white.svg');
+}
+
+.title{
+  font-size: xx-large;
+  font-weight: bold;
+  color: #7300ff;
+  padding-right: 50px;
+}

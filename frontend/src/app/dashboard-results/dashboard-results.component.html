@@ -1,0 +1,21 @@
+<div id="content" class="-sm:flex -sm:flex-col">
+    <div id="header" class="inline-flex">
+        <button id="back" type="button" class="px-2 py-1 shadow-xl flex justify-between rounded-md"
+                (mouseover)="onMouseOver()"
+                (mouseout)="onMouseOut()"
+                (click)="onBackButtonClick()">
+            <img src="{{ buttonImage }}" id="back-icon" alt="Arrow Image" class="px-1"/>
+            <p>Back</p>
+        </button>
+        <p class="title">Results</p>
+    </div>
+    <div id="slider" class="box">
+        <app-slider-images></app-slider-images>
+    </div>
+    <div id="map" class="box">
+        <app-map></app-map>
+    </div>
+    <div id="graph" class="box">
+        <app-graph-amplitude></app-graph-amplitude>
+    </div>
+</div>
