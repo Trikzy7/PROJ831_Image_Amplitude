@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import {Component, AfterViewInit, OnInit} from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
@@ -14,48 +14,53 @@ import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
 import {HttpClient} from "@angular/common/http";
 import {fromLonLat} from 'ol/proj';
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgIf, NgOptimizedImage} from "@angular/common";
+import {DashboardService} from "../services/dashboard.service";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   standalone: true,
   imports: [
-    NgIf
+    NgIf,
+    AsyncPipe,
+    ReactiveFormsModule,
+    FormsModule,
+    NgOptimizedImage
   ],
   styleUrls: ['./map.component.scss']
 })
 
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnInit{
   map!: Map;
   draw!: Draw;
   vectorLayer!: VectorLayer<any>;
   polygon!: string;
+  map_dashboard!: Map;
+  dashboard!: boolean;
 
-  constructor(private polygonService: PolygonService, private http: HttpClient) {}
+  constructor(private polygonService: PolygonService, private http: HttpClient, protected dashboardService: DashboardService) {}
 
-  searchLocation() {
-    const searchInput = (<HTMLInputElement>document.getElementById('search')).value;
-    this.http.get(`https://nominatim.openstreetmap.org/search?format=json&q=${searchInput}`).subscribe((data: any) => {
-      if (data && data[0] && data[0].lat && data[0].lon) {
-        this.zoomToLocation(data[0].lat, data[0].lon);
-      }
-    });
-  }
-
-  zoomToLocation(lat: string, lon: string) {
-    const view = this.map.getView();
-    view.animate({
-      center: fromLonLat([parseFloat(lon), parseFloat(lat)]),
-      zoom: 10
-    });
+  ngOnInit() {
+    this.dashboard = this.dashboardService.getIsOnDashboard();
   }
 
   ngAfterViewInit() {
     if (typeof document !== 'undefined' && typeof window !== "undefined") {
       this.initMap();
     }
+
+    if (this.polygon){
+      this.polygonService.polygon$.subscribe(polygon => {
+        this.polygon = polygon;
+        if (this.map_dashboard) {
+          this.drawPolygon(polygon);
+        }
+      });
+    }
   }
+
   private initMap() {
     this.map = new Map({
       target: 'my-map',
@@ -77,8 +82,22 @@ export class MapComponent implements AfterViewInit {
       ])
     });
 
+    this.map_dashboard = new Map({
+      target: 'my-map-dashboard',
+      layers: [
+          new TileLayer({
+          source: new OSM()
+          })
+      ],
+      view: new View({
+        center: [0, 0],
+        zoom: 0
+      }),
+      controls: defaultControls({rotate: false, attribution: false, zoom:false})
+    });
+
     this.initDrawInteraction();
-  }
+    }
 
   private initDrawInteraction() {
 
@@ -88,6 +107,7 @@ export class MapComponent implements AfterViewInit {
     });
 
     const source = new VectorSource({ wrapX: false });
+
     this.vectorLayer = new VectorLayer({
       source: source,
       style: new Style({
@@ -101,7 +121,7 @@ export class MapComponent implements AfterViewInit {
       })
     });
 
-    this.map.addLayer(this.vectorLayer);
+    this.map ? this.map.addLayer(this.vectorLayer) : this.map_dashboard.addLayer(this.vectorLayer);
 
     this.draw = new Draw({
       source: source,
@@ -109,7 +129,8 @@ export class MapComponent implements AfterViewInit {
       geometryFunction: createBox()
     });
 
-    this.map.addInteraction(this.draw);
+
+    this.map ? this.map.addInteraction(this.draw) : this.map_dashboard.addInteraction(this.draw);
 
     this.draw.on('drawend', (event) => {
       const features = source.getFeatures();
@@ -128,27 +149,15 @@ export class MapComponent implements AfterViewInit {
     });
   }
 
-  formatPolygon(coordinates: number[][][]): string {
-    const polygonCoords = coordinates[0].map(coord => coord.join(' ')).join(', '); // Formater les coordonnées en paires de nombres séparées par un espace
-    return `POLYGON ((${polygonCoords}))`; // Formater le polygone dans la chaîne POLYGON ((...))
-  }
-
   private drawPolygon(polygon: string) {
     if (!this.vectorLayer) {
       console.error('Vector layer is not initialized yet');
       return;
     }
 
-    this.vectorLayer.getSource().clear();
-
-    const polygonCoords = polygon
-        .replace('POLYGON ((', '')
-        .replace('))', '')
-        .split(', ')
-        .map(coord => coord.split(' ').map(Number));
-
+     this.vectorLayer.getSource().clear()
+    const polygonCoords = this.parsePolygonCoordinates(polygon)
     const polygonGeometry = new Polygon([polygonCoords]);
-
     const polygonFeature = new Feature({
       geometry: polygonGeometry
     });
@@ -158,7 +167,44 @@ export class MapComponent implements AfterViewInit {
     // Zoom sur le polygone
     const polygonExtent = polygonGeometry.getExtent();
     this.map.getView().fit(polygonExtent, { padding: [100, 100, 100, 100] });
+    this.map_dashboard.getView().fit(polygonExtent, { padding: [100, 100, 100, 100] });
+    this.map_dashboard.addLayer(this.vectorLayer);
   }
 
 
+  searchLocation() {
+    const searchInput = (<HTMLInputElement>document.getElementById('search')).value;
+    this.http.get(`https://nominatim.openstreetmap.org/search?format=json&q=${searchInput}`).subscribe((data: any) => {
+      if (data && data[0] && data[0].lat && data[0].lon) {
+        this.zoomToLocation(data[0].lat, data[0].lon);
+      }
+    });
+  }
+
+  zoomToLocation(lat: string, lon: string) {
+    const view = this.map.getView();
+    view.animate({
+      center: fromLonLat([parseFloat(lon), parseFloat(lat)]),
+      zoom: 10
+    });
+  }
+
+  formatPolygon(coordinates: number[][][]): string {
+    const polygonCoords = coordinates[0].map(coord => coord.join(' ')).join(', '); // Formater les coordonnées en paires de nombres séparées par un espace
+    return `POLYGON ((${polygonCoords}))`; // Formater le polygone dans la chaîne POLYGON ((...))
+  }
+
+  private parsePolygonCoordinates(polygon: string): number[][] {
+    return polygon
+        .replace('POLYGON ((', '')
+        .replace('))', '')
+        .split(', ')
+        .map(coord => coord.split(' ').map(Number));
+  }
+
+  copyToClipboard(elementId: string) {
+    let copyText = document.getElementById(elementId) as HTMLInputElement;
+    copyText.select();
+    document.execCommand('copy');
+  }
 }

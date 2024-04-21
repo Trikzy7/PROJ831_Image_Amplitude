@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormsModule, NgForm} from '@angular/forms';
 import { formatDate, CommonModule } from '@angular/common';
 import {PolygonService} from "../services/polygon.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-infos',
@@ -22,7 +23,7 @@ export class InfosComponent implements OnInit {
   gptPath!: string;
   order: 'asc' | 'desc' = 'asc';
 
-  constructor(private polygonService: PolygonService) {}
+  constructor(private polygonService: PolygonService, private router: Router) {}
 
   onPolygonChange() {
     this.polygonService.setPolygon(this.polygon);
@@ -39,5 +40,8 @@ export class InfosComponent implements OnInit {
     this.noConform = (f.value.gptPath == null || f.value.username == null || f.value.password == null || f.value.polygon == null) || (f.value.gptPath == "" || f.value.username == "" || f.value.password == "" || f.value.polygon == "");
     this.submit = true;
     console.log(f.value)
+    if (!this.noConform){
+      this.router.navigate(['/results']);
+    }
   }
 }

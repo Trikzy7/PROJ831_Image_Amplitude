@@ -69,6 +69,7 @@ export class GraphAmplitudeComponent implements OnInit, AfterViewInit {
             }]
           },
           options: {
+            responsive: true,
             scales: {
               x: {
                 type: 'time',

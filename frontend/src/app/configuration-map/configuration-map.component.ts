@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {InfosComponent} from "../infos/infos.component";
 import {MapComponent} from "../map/map.component";
+import {DashboardService} from "../services/dashboard.service";
 
 @Component({
   selector: 'app-configuration-map',
@@ -13,14 +14,21 @@ import {MapComponent} from "../map/map.component";
   styleUrl: './configuration-map.component.scss'
 })
 export class ConfigurationMapComponent {
+    constructor(protected dashboardService: DashboardService) { }
     ngOnInit() {
-        if (typeof window !== "undefined") {
+        let backToTopButton = null;
+
+        this.dashboardService.setIsOnDashboard(false);
+        if (typeof document !== "undefined") {
+            backToTopButton = document.getElementById('backToTop');
+        }
+
+        if (typeof window !== "undefined" && backToTopButton) {
             window.addEventListener('scroll', () => {
-                let backToTopButton = document.getElementById('backToTop');
                 if (window.pageYOffset > 100) { // Show backToTopButton after 100px
-                    backToTopButton!.style.display = "block";
+                    backToTopButton.style.display = "block";
                 } else { // Hide backToTopButton
-                    backToTopButton!.style.display = "none";
+                    backToTopButton.style.display = "none";
                 }
             });
         }

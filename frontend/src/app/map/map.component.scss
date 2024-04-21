@@ -3,7 +3,13 @@
   position: relative;
 }
 
-#search-location{
+#my-map-dashboard{
+  height: 50vh;
+  position: relative;
+  border-radius: 10px;
+}
+
+#search-location, #coord{
   position: absolute;
   top: 5%;
   left: 50%;
@@ -12,7 +18,7 @@
   width: 300px;
 }
 
-#search{
+#search, #test{
   border:1px solid #7300ff;
   border-radius: 30px;
 }
@@ -47,5 +53,60 @@
   #search-button{
     width: 30%;
     font-size: 80%;
+  }
+}
+
+
+.coord {
+  display: flex;
+  justify-content: center;
+  background-image: linear-gradient(#ffffff, #ffffff);
+}
+
+.input-group {
+  width: 100%;
+
+  @supports (mix-blend-mode: darken) {
+    position: relative;
+    &__label {
+      position: absolute;
+      left: 2em;
+      top: -0.60em;
+      background: #fff;
+    }
+  }
+
+  &__label {
+    padding: 0 0.3em;
+    text-transform: uppercase;
+    font-size: 0.850em;;
+    color: #7300ff;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 10px;
+  }
+
+  &__input {
+    color: #000;
+    height: calc(1em + 1.6em + 0.5em);
+    width: 100%;
+    padding: 0.8em 1em;
+    border: 0.25em solid transparent;
+    background-image: linear-gradient(#ffffff, #ffffff),
+    linear-gradient(120deg, #8c00ff 0%, #0ff 50%, #e500ff 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    border-radius: 1.8em;
+    background-size: 200% 100%;
+    transition: background-position 0.8s ease-out;
+    font-size: 0.850em;
+
+    &:hover {
+      background-position: 100% 0;
+    }
+
+    &:focus {
+      outline: 2px dashed #7300ff;
+    }
   }
 }

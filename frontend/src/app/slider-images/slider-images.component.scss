@@ -11,8 +11,9 @@
 
 .slider-container {
   width: 30%;
-  margin: 100px auto;
+  margin: 30px;
   text-align: center;
+
 }
 
 .slider {
@@ -25,22 +26,22 @@
 }
 
 #image-container {
-  margin-top: 50px;
-  width: 500px;
-  height: auto;
+  //margin-top: 50px;
+  //width: 500px;
+  //height: auto;
 }
 
 #image-container img {
-  max-width: 100%;
-  height: auto;
+  width: 100%;
+  height: 80vh;
+  border-radius: 10px
 }
 
 #image-container {
-  position: relative;
-  display: inline-block;
+  text-align: -webkit-center;
 }
 #image {
-  width: 600px; /* Largeur de l'image affichée */
+  width: 100%; /* Largeur de l'image affichée */
   height: auto; /* Ajuster automatiquement la hauteur en fonction de la largeur pour éviter la distorsion */
 }
 #overlay {
