@@ -23,16 +23,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
 
     # Processor Arguments
-    parser.add_argument('--listDate', nargs="+", help='', required=True)
+    parser.add_argument('--listeDates', help='', required=True)
     parser.add_argument('--outputPathJsonValue', help='', required=True)
     parser.add_argument('--outputPathPolygonFolder', help='', required=True)
-    parser.add_argument('--coordinates', nargs="+", help='', required=True)
+    parser.add_argument('--coordinates', help='', required=True)
 
     # Analyser Arguments
     args = parser.parse_args()
 
     # Processor Arguments
-    list_date = args.listDate
+    liste_dates = args.listeDates
     output_path_json_value = args.outputPathJsonValue
     output_path_polygon_folder = args.outputPathPolygonFolder
     coordinates = args.coordinates
@@ -40,8 +40,13 @@ if __name__ == '__main__':
     listFilesTif = [f for f in os.listdir(output_path_polygon_folder) if
                     os.path.isfile(os.path.join(output_path_polygon_folder, f)) and f.endswith('.tif')]
 
+    print(listFilesTif)
+
     # retouner la liste
     listFilesTif.sort()
+
+    liste_dates = liste_dates.split(" ")
+    coordinates = coordinates.split(" ")
 
     result = {}
     listTifFinal = []
@@ -54,7 +59,7 @@ if __name__ == '__main__':
 
         dateTif = tif.split("_")[4][:8][:4] + "-" + tif.split("_")[4][:8][4:6] + "-" + tif.split("_")[4][:8][6:8]
 
-        if dateTif in list_date:
+        if dateTif in liste_dates:
             listTifFinal.append(tif)
 
             absolutPath = os.path.join(output_path_polygon_folder, tif)

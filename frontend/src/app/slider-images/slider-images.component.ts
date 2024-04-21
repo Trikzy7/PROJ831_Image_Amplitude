@@ -1,4 +1,6 @@
 import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { AmplitudeService } from '../services/amplitude.service'; // Import the AmplitudeService
+
 
 @Component({
   selector: 'app-slider-images',
@@ -7,6 +9,10 @@ import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angula
   styleUrls: ['./slider-images.component.scss']
 })
 export class SliderImagesComponent implements OnInit, AfterViewInit {
+
+  constructor(private amplitudeService: AmplitudeService) { } // Inject the AmplitudeService
+
+
   @ViewChild('imageContainer') imageContainer!: ElementRef;
   @ViewChild('overlay') overlay!: ElementRef;
   @ViewChild('sliderImage') sliderImage!: ElementRef;
@@ -30,8 +36,7 @@ export class SliderImagesComponent implements OnInit, AfterViewInit {
       const heightRatio = this.sliderImage.nativeElement.naturalHeight / this.sliderImage.nativeElement.height;
       const adjustedX = Math.round(x * widthRatio);
       const adjustedY = Math.round(y * heightRatio);
-      alert('Clic détecté aux coordonnées : X = ' + adjustedX + ', Y = ' + adjustedY);
-
+      console.log('Clic détecté aux coordonnées : X = ' + adjustedX + ', Y = ' + adjustedY);
 
       // Supprimer l'ancien cercle s'il existe
       if (circle) {
@@ -51,6 +56,24 @@ export class SliderImagesComponent implements OnInit, AfterViewInit {
 
       // Ajouter le cercle à l'image
       document.body.appendChild(circle);
+
+
+      // Faire une requête HTTP POST à l'URL du contrôleur avec un corps de requête
+      fetch('http://localhost:3000/api/script/execute-modification-graph-amplitude-script', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          listeDates : "2023-03-14 2023-03-15 2023-03-22 2023-03-26",
+          outputPathPolygonFolder : "/Users/mathieu/Etudes/IDU4/S8/Projet_IDU/PROJ831_Image_Amplitude/frontend/src/assets/images/imagesTIF/",
+          coordinates : adjustedX + " " + adjustedY
+        })
+      })
+      .then(response => response.text())
+      .then(data => {
+        this.amplitudeService.updateAmplitudeData();
+      });
     });
   }
 

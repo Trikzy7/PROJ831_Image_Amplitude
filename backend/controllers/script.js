@@ -46,4 +46,28 @@ exports.executeAmplitudeScripts = (req, res, next) => {
     
   }
 
+// MODIFICATION GRAPH AMPLITUDE SCRIPTS
+exports.executeModificationGraphAmplitudeScript = (req, res, next) => {
+    listeDates = req.body.listeDates;
+    outputPathPolygonFolder = req.body.outputPathPolygonFolder;
+    coordinates = req.body.coordinates;
+    outputPathJsonValue = path.join(__dirname, '../../frontend/src/assets/');
+
+    // cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --outputPathZip '${outputPathZip}' --username '${username}' --password '${password}' --polygon '${polygon}' --dateStart '${dateStart}' --dateEnd '${dateEnd}' `;
+    cmdModifScript = `python3.10 ${path.join(__dirname, '../script/graphAmplitude.py')} --listeDates '${listeDates}' --outputPathJsonValue '${outputPathJsonValue}' --outputPathPolygonFolder '${outputPathPolygonFolder}' --coordinates '${coordinates}'`;
+
+    // Execute d'abord download.py
+    exec(cmdModifScript, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Erreur lors de l'exécution de graphAmplitude.py : ${error.message}`);
+            res.status(500).send('Erreur lors de l\'exécution de graphAmplitude.py');
+            return;
+        }
+        console.log('graphAmplitude.py terminé avec succès.');
+        res.status(200).send('Scripts modification exécutés avec succès.');
+    });
+
+
+}
+
   
