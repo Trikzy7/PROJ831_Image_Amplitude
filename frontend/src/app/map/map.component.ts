@@ -151,7 +151,6 @@ export class MapComponent implements AfterViewInit, OnInit{
 
   private drawPolygon(polygon: string) {
     if (!this.vectorLayer) {
-      console.error('Vector layer is not initialized yet');
       return;
     }
 
