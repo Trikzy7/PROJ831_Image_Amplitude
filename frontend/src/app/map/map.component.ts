@@ -17,7 +17,7 @@ import {fromLonLat} from 'ol/proj';
 import {AsyncPipe, NgIf, NgOptimizedImage} from "@angular/common";
 import {DashboardService} from "../services/dashboard.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-
+import {toLonLat} from 'ol/proj';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -155,9 +155,10 @@ export class MapComponent implements AfterViewInit, OnInit{
       return;
     }
 
-     this.vectorLayer.getSource().clear()
+    this.vectorLayer.getSource().clear()
     const polygonCoords = this.parsePolygonCoordinates(polygon)
-    const polygonGeometry = new Polygon([polygonCoords]);
+    const projectedPolygonCoords = polygonCoords.map(coord => fromLonLat(coord)); // Convertir en coordonnées de la projection de la carte
+    const polygonGeometry = new Polygon([projectedPolygonCoords]);
     const polygonFeature = new Feature({
       geometry: polygonGeometry
     });
@@ -189,10 +190,16 @@ export class MapComponent implements AfterViewInit, OnInit{
     });
   }
 
-  formatPolygon(coordinates: number[][][]): string {
-    const polygonCoords = coordinates[0].map(coord => coord.join(' ')).join(', '); // Formater les coordonnées en paires de nombres séparées par un espace
-    return `POLYGON ((${polygonCoords}))`; // Formater le polygone dans la chaîne POLYGON ((...))
-  }
+
+
+formatPolygon(coordinates: number[][][]): string {
+  const polygonCoords = coordinates[0].map(coord => {
+    const lonLat = toLonLat(coord);
+    return lonLat.join(' ');
+  }).join(', ');
+
+  return `POLYGON ((${polygonCoords}))`;
+}
 
   private parsePolygonCoordinates(polygon: string): number[][] {
     return polygon
