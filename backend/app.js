@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 
 const scriptRoutes = require('./routes/script');
+const imageRoutes = require('./routes/image');
 
 app.use(express.json());
 
@@ -18,5 +19,6 @@ app.use((req, res, next) => {
   
 // ROUTES
 app.use('/api/script', scriptRoutes);
+app.use('/api/image', imageRoutes);
 
 module.exports = app;

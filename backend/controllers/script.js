@@ -1,45 +1,60 @@
 // ---- FUNCTIONS TO LAUNCH SCRIPTS ----
 const { exec } = require('child_process');
+const e = require('express');
 const path = require('path');
 
 // AMPLITUDE SCRIPTS
 exports.executeAmplitudeScripts = (req, res, next) => {
 
-    outputPathZip = req.body.outputPathZip;
     username = req.body.username;
     password = req.body.password;
     polygon = req.body.polygon;
     dateStart = req.body.dateStart;
     dateEnd = req.body.dateEnd;
-  
     pathGpt = req.body.pathGpt;
-    pathGraph = req.body.pathGraph;
-    outputPathTif = req.body.outputPathTif;
-  
-    cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --outputPathZip '${outputPathZip}' --username '${username}' --password '${password}' --polygon '${polygon}' --dateStart '${dateStart}' --dateEnd '${dateEnd}' `;
-    cmdProcessScript = `python3.10 ${path.join(__dirname, '../script/process.py')} --outputPathZip '${outputPathZip}' --polygon '${polygon}' --pathGpt '${pathGpt}' --pathGraph '${pathGraph}' --outputPathTif '${outputPathTif}'`;
-    // python3.10 process.py --outputPathZip '/Users/mathieu/Etudes/IDU4/S8/Projet_IDU/imagesZip/' --polygon 'POLYGON((6.0502 45.7566,6.2397 45.7566,6.2397 45.9662,6.0502 45.9662,6.0502 45.7566))' --pathGpt "/Applications/snap/bin/gpt" --pathGraph "/Users/mathieu/Etudes/IDU4/S8/Projet_IDU/finalGraphTest.xml" --outputPathTif "/Users/mathieu/Etudes/IDU4/S8/Projet_IDU/imageTif/"
+    listDateMissing = req.body.listDateMissing;
 
+    if (listDateMissing.length > 0) {
+        listDateMissingStr = "";
+        listDateMissing.forEach((date) => {
+            listDateMissingStr = listDateMissingStr + date + " ";
+        })
+        cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --username '${username}' --password '${password}' --polygon '${polygon}' --listDateMissing '${listDateMissingStr}' `;
+    }
+    else {
+        cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --username '${username}' --password '${password}' --polygon '${polygon}' --dateStart '${dateStart}' --dateEnd '${dateEnd}' `;
+    }
 
-    // Execute d'abord download.py
+    console.log(cmdDownloadScript);
+
+    // Execute download.py
     exec(cmdDownloadScript, (error, stdout, stderr) => {
         if (error) {
             console.error(`Erreur lors de l'exécution de download.py : ${error.message}`);
-            res.status(500).send('Erreur lors de l\'exécution de download.py');
+            res.status(500).send({error: stderr});
             return;
         }
-        console.log('download.py terminé avec succès.');
+
+        let list_path_images_zip = JSON.parse(stdout.replace(/'/g, "\""));
         
-        // Ensuite, execute process.py
-        exec(cmdProcessScript, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Erreur lors de l'exécution de process.py : ${error.message}`);
-                res.status(500).send('Erreur lors de l\'exécution de process.py');
-                return;
-            }
-            console.log('process.py terminé avec succès.');
-            res.status(200).send('Scripts download et process exécutés avec succès.');
-        });
+        let list_path_images_zip_str = "";
+        list_path_images_zip.forEach((list_path_image) => {
+            list_path_images_zip_str = list_path_images_zip_str + list_path_image + " ";
+        })
+
+
+        cmdProcessScript = `python3.10 ${path.join(__dirname, '../script/process.py')} --listPathFilesZip '${list_path_images_zip_str}' --polygon '${polygon}' --pathGpt '${pathGpt}'`;
+
+        // Execute process.py
+        // exec(cmdProcessScript, (error, stdout, stderr) => {
+        //     if (error) {
+        //         console.error(`Erreur lors de l'exécution de process.py : ${error.message}`);
+        //         res.status(500).send({error: 'Erreur lors de l\'exécution de process.py'});
+        //         return;
+        //     }
+        //     console.log('process.py terminé avec succès.');
+        //     res.status(200).send({message: stdout});
+        // });
 
     });
   
@@ -71,3 +86,38 @@ exports.executeModificationGraphAmplitudeScript = (req, res, next) => {
 }
 
   
+
+exports.executeAmplitudeProcessAndConvertScript = (req, res, next) => {
+
+    polygon = req.body.polygon;
+    pathGpt = req.body.pathGpt;
+    listInputPathZip = req.body.listInputPathZip
+
+    let nameFilesZip = listInputPathZip.join(' ');
+
+    outputPathTif = path.join(__dirname, `../../images/imagesTIF/${polygon.replace(/\s/g, '_')}`) + '/';
+    pathGraph = path.join(__dirname, `../finalGraph.xml`);
+  
+
+    cmdProcessScript = `python3.10 ${path.join(__dirname, '../script/process.py')} --nameFilesZip '${nameFilesZip}' --polygon '${polygon.toUpperCase()}' --pathGpt '${pathGpt}' --pathGraph '${pathGraph}' --outputPathTif '${outputPathTif}'`;
+
+    console.log(cmdProcessScript);
+
+
+    // Execute d'abord process.py
+    exec(cmdProcessScript, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Erreur lors de l'exécution de process.py : ${error.message}`);
+            res.status(500).send('Erreur lors de l\'exécution de process.py');
+            return;
+        }
+
+        console.log('process.py terminé avec succès.');
+        res.status(200).send({message: 'Scripts process et process exécutés avec succès.'});
+
+    });
+
+    
+  
+    
+  }
