@@ -12,31 +12,32 @@ exports.executeAmplitudeScripts = (req, res, next) => {
     dateStart = req.body.dateStart;
     dateEnd = req.body.dateEnd;
     pathGpt = req.body.pathGpt;
-    listDateMissing = req.body.listDateMissing;
+    // listDateMissing = req.body.listDateMissing;
 
-    if (listDateMissing.length > 0) {
-        listDateMissingStr = "";
-        listDateMissing.forEach((date) => {
-            listDateMissingStr = listDateMissingStr + date + " ";
-        })
-        cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --username '${username}' --password '${password}' --polygon '${polygon}' --listDateMissing '${listDateMissingStr}' `;
-    }
-    else {
+    // if (listDateMissing.length > 0) {
+    //     listDateMissingStr = "";
+    //     listDateMissing.forEach((date) => {
+    //         listDateMissingStr = listDateMissingStr + date + " ";
+    //     })
+    //     cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --username '${username}' --password '${password}' --polygon '${polygon}' --listDateMissing '${listDateMissingStr}' `;
+    // }
+    // else {
         cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --username '${username}' --password '${password}' --polygon '${polygon}' --dateStart '${dateStart}' --dateEnd '${dateEnd}' `;
-    }
+    // }
 
-    console.log(cmdDownloadScript);
+    // console.log(cmdDownloadScript);
 
     // Execute download.py
     exec(cmdDownloadScript, (error, stdout, stderr) => {
         if (error) {
             console.error(`Erreur lors de l'exécution de download.py : ${error.message}`);
-            res.status(500).send({error: stderr});
+            res.status(500).send({ error: stderr });
             return;
         }
 
+        console.log(stdout);
         let list_path_images_zip = JSON.parse(stdout.replace(/'/g, "\""));
-        
+
         let list_path_images_zip_str = "";
         list_path_images_zip.forEach((list_path_image) => {
             list_path_images_zip_str = list_path_images_zip_str + list_path_image + " ";
@@ -45,21 +46,24 @@ exports.executeAmplitudeScripts = (req, res, next) => {
 
         cmdProcessScript = `python3.10 ${path.join(__dirname, '../script/process.py')} --listPathFilesZip '${list_path_images_zip_str}' --polygon '${polygon}' --pathGpt '${pathGpt}'`;
 
+        console.log(cmdProcessScript);
+        console.log('prout 💨');
+
         // Execute process.py
-        // exec(cmdProcessScript, (error, stdout, stderr) => {
-        //     if (error) {
-        //         console.error(`Erreur lors de l'exécution de process.py : ${error.message}`);
-        //         res.status(500).send({error: 'Erreur lors de l\'exécution de process.py'});
-        //         return;
-        //     }
-        //     console.log('process.py terminé avec succès.');
-        //     res.status(200).send({message: stdout});
-        // });
+        exec(cmdProcessScript, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Erreur lors de l'exécution de process.py : ${error.message}`);
+                res.status(500).send({ error: 'Erreur lors de l\'exécution de process.py' });
+                return;
+            }
+            console.log('process.py terminé avec succès.');
+            res.status(200).send({ message: stdout, completed: true });
+        });
 
     });
-  
-    
-  }
+
+
+}
 
 // MODIFICATION GRAPH AMPLITUDE SCRIPTS
 exports.executeModificationGraphAmplitudeScript = (req, res, next) => {
@@ -85,7 +89,7 @@ exports.executeModificationGraphAmplitudeScript = (req, res, next) => {
 
 }
 
-  
+
 
 exports.executeAmplitudeProcessAndConvertScript = (req, res, next) => {
 
@@ -97,7 +101,7 @@ exports.executeAmplitudeProcessAndConvertScript = (req, res, next) => {
 
     outputPathTif = path.join(__dirname, `../../images/imagesTIF/${polygon.replace(/\s/g, '_')}`) + '/';
     pathGraph = path.join(__dirname, `../finalGraph.xml`);
-  
+
 
     cmdProcessScript = `python3.10 ${path.join(__dirname, '../script/process.py')} --nameFilesZip '${nameFilesZip}' --polygon '${polygon.toUpperCase()}' --pathGpt '${pathGpt}' --pathGraph '${pathGraph}' --outputPathTif '${outputPathTif}'`;
 
@@ -113,11 +117,11 @@ exports.executeAmplitudeProcessAndConvertScript = (req, res, next) => {
         }
 
         console.log('process.py terminé avec succès.');
-        res.status(200).send({message: 'Scripts process et process exécutés avec succès.'});
+        res.status(200).send({ message: 'Scripts process et process exécutés avec succès.' });
 
     });
 
-    
-  
-    
-  }
+
+
+
+}

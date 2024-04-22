@@ -197,12 +197,12 @@ formatPolygon(coordinates: number[][][]): string {
     return lonLat.join(' ');
   }).join(', ');
 
-  return `POLYGON ((${polygonCoords}))`;
+  return `POLYGON((${polygonCoords}))`;
 }
 
   private parsePolygonCoordinates(polygon: string): number[][] {
     return polygon
-        .replace('POLYGON ((', '')
+        .replace('POLYGON((', '')
         .replace('))', '')
         .split(', ')
         .map(coord => coord.split(' ').map(Number));

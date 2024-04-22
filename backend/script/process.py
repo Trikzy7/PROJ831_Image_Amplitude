@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     # PATH TO GRAPH
     current_path = os.path.dirname(os.path.abspath(__file__))
-    path_graph = os.path.abspath(os.path.join(current_path, '../finalGraph.xml'))
+    path_graph = os.path.abspath(os.path.join(current_path, '../finalGraphDoubleSubset.xml'))
 
     # GET THE LIST OF FILES ZIP
     list_files_zip = list_files_zip.split(' ')
@@ -45,6 +45,7 @@ if __name__ == '__main__':
 
     # transformer le polygon en liste de float
     grandPolygon = grandPolygon.replace("POLYGON((", "").replace("))", "").replace(",", " ").split(" ")
+    grandPolygon = list(filter(None, grandPolygon))
     grandPolygon = [float(x) for x in grandPolygon]
 
     # mettre par couple de deux valeurs sous forme de liste
@@ -69,7 +70,6 @@ if __name__ == '__main__':
     # reformer le polygon de base avec ces nouvelles valeurs
     grandPolygon = "POLYGON((" + ", ".join([str(x[0]) + " " + str(x[1]) for x in grandPolygon]) + "))"
 
-
     # Apply the graph on each image
     for absolute_path_file in tqdm(list_files_zip):
         file_name = os.path.basename(absolute_path_file)
@@ -78,9 +78,9 @@ if __name__ == '__main__':
         if not os.path.exists(f'{output_path_tif}/{polygon_folder_name}/{file_name.replace(".zip", ".tif")}'):
         # Set the parameters for the current file
             params["inputFile"] = absolute_path_file
-            params["outputFile"] = "\"" + output_path_tif + "/" + polygon_folder_name + "/" + file_name.replace(".zip", ".tif")  + "\"" 
-            params["polygon1"] = "\"" + grandPolygon + "\""
-            params["polygon2"] = "\"" + polygon + "\""
+            params["outputFile"] = "\"" + output_path_tif + "/" + polygon_folder_name + "/" + file_name.replace(".zip", "")  + "\"" 
+            params["polygon1"] = "\"" + grandPolygon + "\"" 
+            params["polygon2"] = "\"" + polygon + "\"" 
 
             # Construct the optionnal parameter command line
             paramLine = ""
@@ -89,4 +89,5 @@ if __name__ == '__main__':
 
             # Run the executable
             # print(f"{snapExecutablePath} {orthoGraph} {paramLine}")
+            # print(f"{path_gpt} {path_graph} {paramLine}")
             os.system(f"{path_gpt} {path_graph} {paramLine}")
