@@ -65,36 +65,41 @@ export class InfosComponent implements OnInit {
           if (isTIFDirectoryExist.directoryExist) {
             console.log('Directory exist');
 
-            // -- CHECK IF ALL IMAGES WANTED ARE PROCESSED
-            // -- GET NUMBER OF IMAGES BETWEEN DATES IN ASF (true number of images)
-            // this.imageService.getListDatesImagesASFBetweenDates(f.value.polygon, this.startDate, this.endDate)
-            //   .subscribe((listDatesASFImages) => {
-            //     console.log(listDatesASFImages);
+            //-- CHECK IF ALL IMAGES WANTED ARE PROCESSED
+            //-- GET NUMBER OF IMAGES BETWEEN DATES IN ASF (true number of images)
+            this.imageService.getListDatesImagesASFBetweenDates(f.value.polygon, this.startDate, this.endDate)
+              .subscribe((listDatesASFImages) => {
+                console.log(listDatesASFImages);
 
-            //     -- GET LIST OF IMAGES BETWEEN DATES
-            //     this.imageService.getListImagesLocalBetweenDates(f.value.polygon, this.startDate, this.endDate)
-            //       .subscribe((listLocalImages) => {
-            //         console.log('prout 💨');
-            //         console.log(listDatesImages);
+                //-- GET LIST OF IMAGES BETWEEN DATES
+                this.imageService.getListImagesLocalBetweenDates(f.value.polygon, this.startDate, this.endDate)
+                  .subscribe((listLocalImages) => {
+                    console.log('prout 💨');
+                    console.log(listLocalImages);
 
-            //         this.listLocalImages = listLocalImages;
-            //         console.log(this.listLocalImages);
+                    this.listLocalImages = listLocalImages;
+                    console.log(this.listLocalImages);
 
 
-            //         -- IF WE HAVE ALL IMAGES IN LOCAL
-            //         if (listDatesASFImages.length === listLocalImages.length) {
-            //           console.log('All images .tif are in local');
-            //         }
-            //         else {
-            //           -- GET LIST OF DATES MISSING
-            //           let listDateImagesMissing = this.getListDateImagesMissing(listLocalImages, listDatesASFImages);
-            //           console.log(listDateImagesMissing);
+                    //-- IF WE HAVE ALL IMAGES IN LOCAL
+                    if (listDatesASFImages.length === listLocalImages.length) {
+                      console.log('All images .tif are in local');
+                    }
+                    else {
+                      // -- GET LIST OF DATES MISSING
+                      let listDateImagesMissing = this.getListDateImagesMissing(listLocalImages, listDatesASFImages);
+                      console.log(listDateImagesMissing);
 
-            //           TODO EXECUTE SCRIPTS WITH LIST DATES MISSING 
-            //           this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, "", "", f.value.gptPath, listDateImagesMissing)
-            //         }
-            //       })
-            //   })
+                      //TODO EXECUTE SCRIPTS WITH LIST DATES MISSING 
+                      // TODO EXECUTE SCRIPTS WITH DATES START AND END 
+                      this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
+                        .subscribe((data) => {
+                          console.log(data);
+                        })
+
+                    }
+                  })
+              })
           }
           else {
             console.log('Directory does not exist');
@@ -103,7 +108,7 @@ export class InfosComponent implements OnInit {
             this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
               .subscribe((data) => {
                 console.log(data);
-            })
+              })
 
           }
         })
