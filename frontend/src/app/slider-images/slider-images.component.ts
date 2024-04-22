@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AmplitudeService } from '../services/amplitude.service'; // Import the AmplitudeService
 
 
@@ -8,7 +8,7 @@ import { AmplitudeService } from '../services/amplitude.service'; // Import the 
   standalone: true,
   styleUrls: ['./slider-images.component.scss']
 })
-export class SliderImagesComponent implements OnInit, AfterViewInit {
+export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private amplitudeService: AmplitudeService) { } // Inject the AmplitudeService
 
@@ -21,12 +21,12 @@ export class SliderImagesComponent implements OnInit, AfterViewInit {
   imageSrc = 'assets/images/imagesPNG/image1VH.png';
   sliderValue = 'image1VH.png'; // Initial value
 
+  circle: HTMLDivElement | null = null; // Variable pour stocker le cercle actuel
+
   ngOnInit() {
 
   }
-
   ngAfterViewInit() {
-    let circle: HTMLDivElement | null = null; // Variable pour stocker le cercle actuel
 
     this.imageContainer.nativeElement.addEventListener('click', (event: MouseEvent) => {
       const rect = this.imageContainer.nativeElement.getBoundingClientRect();
@@ -39,23 +39,23 @@ export class SliderImagesComponent implements OnInit, AfterViewInit {
       console.log('Clic détecté aux coordonnées : X = ' + adjustedX + ', Y = ' + adjustedY);
 
       // Supprimer l'ancien cercle s'il existe
-      if (circle) {
-        circle.remove();
+      if (this.circle) {
+        this.circle.remove();
       }
 
       // Créer un nouveau cercle
-      circle = document.createElement('div');
-      circle.style.width = '20px'; // Diamètre du cercle
-      circle.style.height = '20px'; // Diamètre du cercle
-      circle.style.border = '3px solid red'; // Bordure du cercle
-      circle.style.borderRadius = '50%'; // Pour rendre le div rond
-      circle.style.position = 'absolute'; // Pour positionner le cercle
-      circle.style.left = `${event.clientX + window.scrollX  - 10}px`; // Position X (moins la moitié du diamètre pour centrer)
-      circle.style.top = `${event.clientY + window.scrollY  - 10}px`; // Position Y (moins la moitié du diamètre pour centrer)
-      circle.style.zIndex = '9999'; // Pour que le cercle apparaisse au-dessus de tout le reste
+      this.circle = document.createElement('div');
+      this.circle.style.width = '20px'; // Diamètre du cercle
+      this.circle.style.height = '20px'; // Diamètre du cercle
+      this.circle.style.border = '3px solid red'; // Bordure du cercle
+      this.circle.style.borderRadius = '50%'; // Pour rendre le div rond
+      this.circle.style.position = 'absolute'; // Pour positionner le cercle
+      this.circle.style.left = `${event.clientX + window.scrollX  - 10}px`; // Position X (moins la moitié du diamètre pour centrer)
+      this.circle.style.top = `${event.clientY + window.scrollY  - 10}px`; // Position Y (moins la moitié du diamètre pour centrer)
+      this.circle.style.zIndex = '9999'; // Pour que le cercle apparaisse au-dessus de tout le reste
 
       // Ajouter le cercle à l'image
-      document.body.appendChild(circle);
+      document.body.appendChild(this.circle);
 
 
       // Faire une requête HTTP POST à l'URL du contrôleur avec un corps de requête
@@ -75,6 +75,13 @@ export class SliderImagesComponent implements OnInit, AfterViewInit {
         this.amplitudeService.updateAmplitudeData();
       });
     });
+  }
+
+  ngOnDestroy() {
+    // Remove the circle when the component is destroyed
+    if (this.circle) {
+      this.circle.remove();
+    }
   }
 
   changeImage(e: EventTarget | null) {
