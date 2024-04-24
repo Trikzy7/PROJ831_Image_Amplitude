@@ -10,23 +10,27 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Download image data in .zip format from ASF')
 
     # Processor Arguments
-    parser.add_argument('--outputPathTif', help='Absolute Path to directory where the files .tif will be saved after the process', required=True)
-    parser.add_argument('--outputPathPng', help='Absolute Path to directory where the files .png will be saved after the process', required=True)
+    parser.add_argument('--inputPathTif', help='Absolute Path to directory where the files .tif will be saved after the process', required=True)
 
 
     # Analyser Arguments
     args = parser.parse_args()
 
     # Processor Arguments
-    output_path_tif = args.outputPathTif
-    output_path_png = args.outputPathPng
+    input_path_tif = args.inputPathTif
 
     # Read images
-    listFiles = [f for f in os.listdir(output_path_tif) if os.path.isfile(os.path.join(output_path_tif,f)) and f.endswith('.tif')]
+    listFiles = [f for f in os.listdir(input_path_tif) if os.path.isfile(os.path.join(input_path_tif,f)) and f.endswith('.tif')]
 
+    # Create folder png if not exist
+    if not os.path.exists(f'{input_path_tif}/png'):
+        os.makedirs(f'{input_path_tif}/png')
+
+
+    # Process images to make png 
     for f in tqdm(listFiles):
         print(f)
-        full_path = os.path.join(output_path_tif, f)
+        full_path = os.path.join(input_path_tif, f)
         im = rioxarray.open_rasterio(full_path).data
 
         im1 = im[0]
@@ -45,8 +49,8 @@ if __name__ == '__main__':
         im_scaled1 = (255 * im_normalized1).astype(np.uint8)
 
         # Écrire les données de l'image normalisées et mises à l'échelle dans un nouveau fichier
-        print(output_path_png + f.replace(".tif", "_VH.png"))
-        cv2.imwrite(output_path_png + "/" + f.replace(".tif", "_VH.png"), im_scaled1)
+        if not os.path.exists(f'{input_path_tif}/png' + "/" + f.replace(".tif", "_VH.png")):
+            cv2.imwrite(f'{input_path_tif}/png' + "/" + f.replace(".tif", "_VH.png"), im_scaled1)
 
         im2 = im[1]
 
@@ -64,6 +68,7 @@ if __name__ == '__main__':
         im_scaled2 = (255 * im_normalized2).astype(np.uint8)
 
         # Écrire les données de l'image normalisées et mises à l'échelle dans un nouveau fichier
-        cv2.imwrite(output_path_png + "/" + f.replace(".tif", "_VV.png"), im_scaled2)
+        if not os.path.exists(f'{input_path_tif}/png' + "/" + f.replace(".tif", "_VV.png")):
+            cv2.imwrite(f'{input_path_tif}/png' + "/" + f.replace(".tif", "_VV.png"), im_scaled2)
 
 

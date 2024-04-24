@@ -14,18 +14,7 @@ exports.executeAmplitudeScripts = (req, res, next) => {
     pathGpt = req.body.pathGpt;
     // listDateMissing = req.body.listDateMissing;
 
-    // if (listDateMissing.length > 0) {
-    //     listDateMissingStr = "";
-    //     listDateMissing.forEach((date) => {
-    //         listDateMissingStr = listDateMissingStr + date + " ";
-    //     })
-    //     cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --username '${username}' --password '${password}' --polygon '${polygon}' --listDateMissing '${listDateMissingStr}' `;
-    // }
-    // else {
-        cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --username '${username}' --password '${password}' --polygon '${polygon}' --dateStart '${dateStart}' --dateEnd '${dateEnd}' `;
-    // }
-
-    // console.log(cmdDownloadScript);
+    cmdDownloadScript = `python3.10 ${path.join(__dirname, '../script/download.py')} --username '${username}' --password '${password}' --polygon '${polygon}' --dateStart '${dateStart}' --dateEnd '${dateEnd}' `;
 
     // Execute download.py
     exec(cmdDownloadScript, (error, stdout, stderr) => {
@@ -46,9 +35,6 @@ exports.executeAmplitudeScripts = (req, res, next) => {
 
         cmdProcessScript = `python3.10 ${path.join(__dirname, '../script/process.py')} --listPathFilesZip '${list_path_images_zip_str}' --polygon '${polygon}' --pathGpt '${pathGpt}'`;
 
-        console.log(cmdProcessScript);
-        console.log('prout 💨');
-
         // Execute process.py
         exec(cmdProcessScript, (error, stdout, stderr) => {
             if (error) {
@@ -57,11 +43,26 @@ exports.executeAmplitudeScripts = (req, res, next) => {
                 return;
             }
             console.log('process.py terminé avec succès.');
-            res.status(200).send({ message: stdout, completed: true });
+
+            let inputtPathTif = path.join(__dirname, `../../images/imagesTIF/${polygon.replace(/\s/g, '_')}`) + '/';
+            console.log(inputtPathTif);
+            cmdTifToPngScript = `python3.10 ${path.join(__dirname, '../script/tifToPng.py')} --inputPathTif '${inputtPathTif}'`;
+
+            console.log(cmdTifToPngScript)
+
+             // Execute tifToPng.py
+            exec(cmdTifToPngScript, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`Erreur lors de l'exécution de tifToPng.py : ${error.message}`);
+                    res.status(500).send({ error: 'Erreur lors de l\'exécution de tifToPng.py' });
+                    return;
+                }
+                console.log('tifToPng.py terminé avec succès.');
+                res.status(200).send({ message: stdout, completed: true });
+            });
         });
 
     });
-
 
 }
 
@@ -79,16 +80,14 @@ exports.executeModificationGraphAmplitudeScript = (req, res, next) => {
     exec(cmdModifScript, (error, stdout, stderr) => {
         if (error) {
             console.error(`Erreur lors de l'exécution de graphAmplitude.py : ${error.message}`);
-            res.status(500).send('Erreur lors de l\'exécution de graphAmplitude.py');
+            res.status(500).send({error: 'Erreur lors de l\'exécution de graphAmplitude.py'});
             return;
         }
         console.log('graphAmplitude.py terminé avec succès.');
-        res.status(200).send('Scripts modification exécutés avec succès.');
+        res.status(200).send({message: 'Scripts modification exécutés avec succès.'});
     });
 
-
 }
-
 
 
 exports.executeAmplitudeProcessAndConvertScript = (req, res, next) => {

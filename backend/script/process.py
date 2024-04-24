@@ -9,8 +9,6 @@ if __name__ == '__main__':
     # Processor Arguments
     parser.add_argument('--listPathFilesZip', help='List absolute path of .ZIP to process', required=True)
     parser.add_argument('--pathGpt', help='End of the period you want download with format YYYY-MM-DD', required=True)
-    # parser.add_argument('--pathGraph', help='Absolute Path to directory where the graph .xml is', required=True)
-    # parser.add_argument('--outputPathTif', help='Absolute Path to directory where the files .tif will be saved after the process', required=True)
     parser.add_argument('--polygon', help='Polygon you want images from', required=True)
 
     # Analyser Arguments
@@ -88,6 +86,8 @@ if __name__ == '__main__':
                 paramLine += f" -P{k}={params[k]}"
 
             # Run the executable
-            # print(f"{snapExecutablePath} {orthoGraph} {paramLine}")
-            # print(f"{path_gpt} {path_graph} {paramLine}")
             os.system(f"{path_gpt} {path_graph} {paramLine}")
+
+
+    # Return the output path of the tif files
+    print(f'{output_path_tif}/{polygon_folder_name}')
