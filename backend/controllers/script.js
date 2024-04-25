@@ -24,7 +24,6 @@ exports.executeAmplitudeScripts = (req, res, next) => {
             return;
         }
 
-        console.log(stdout);
         let list_path_images_zip = JSON.parse(stdout.replace(/'/g, "\""));
 
         let list_path_images_zip_str = "";
@@ -45,10 +44,8 @@ exports.executeAmplitudeScripts = (req, res, next) => {
             console.log('process.py terminé avec succès.');
 
             let inputtPathTif = path.join(__dirname, `../../images/imagesTIF/${polygon.replace(/\s/g, '_')}`) + '/';
-            console.log(inputtPathTif);
             cmdTifToPngScript = `python3.10 ${path.join(__dirname, '../script/tifToPng.py')} --inputPathTif '${inputtPathTif}'`;
 
-            console.log(cmdTifToPngScript)
 
              // Execute tifToPng.py
             exec(cmdTifToPngScript, (error, stdout, stderr) => {

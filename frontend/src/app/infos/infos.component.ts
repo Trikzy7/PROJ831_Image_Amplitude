@@ -95,6 +95,16 @@ export class InfosComponent implements OnInit {
                       this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
                         .subscribe((data) => {
                           console.log(data);
+
+                          this.router.navigate(
+                            ['/results'],
+                            {
+                              queryParams: {
+                                polygon: f.value.polygon,
+                                dateStart: this.startDate,
+                                dateEnd: this.endDate
+                              }
+                            });
                         })
 
                     }
@@ -108,12 +118,22 @@ export class InfosComponent implements OnInit {
             this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
               .subscribe((data) => {
                 console.log(data);
+
+                this.router.navigate(
+                  ['/results'],
+                  {
+                    queryParams: {
+                      polygon: f.value.polygon,
+                      dateStart: this.startDate,
+                      dateEnd: this.endDate
+                    }
+                  });
               })
 
           }
         })
 
-      // this.router.navigate(['/results']);
+      // 
     }
 
   }
