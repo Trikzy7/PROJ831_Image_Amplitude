@@ -84,3 +84,20 @@ H2, #titreASF {
     }
   }
 }
+
+.blur {
+  filter: blur(2px);
+}
+
+.bg-top-window{
+  background-color: #7300ff;
+}
+
+.color-load{
+    color: #7300ff;
+}
+
+.personalisation-window{
+  border: solid 1px #7300ff;
+  box-shadow: 0 0 90px 0 gray;
+}

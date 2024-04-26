@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
     private scriptService: scriptService) {}
 
   ngOnInit() {
-    console.log('app component');
+    // console.log('app component');
 
     // this.imageService.getNbImagesBetweenDates(
     //   'polygon((6.0502 45.7566,6.2397 45.7566,6.2397 45.9662,6.0502 45.9662,6.0502 45.7566))', 

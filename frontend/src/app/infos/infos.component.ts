@@ -27,6 +27,7 @@ export class InfosComponent implements OnInit {
   gptPath!: string;
   order: 'asc' | 'desc' = 'asc';
   listLocalImages!: Image[];
+  isLoading = false;
 
   constructor(private polygonService: PolygonService,
     private router: Router,
@@ -91,10 +92,12 @@ export class InfosComponent implements OnInit {
                       console.log(listDateImagesMissing);
 
                       //TODO EXECUTE SCRIPTS WITH LIST DATES MISSING 
-                      // TODO EXECUTE SCRIPTS WITH DATES START AND END 
+                      // TODO EXECUTE SCRIPTS WITH DATES START AND END
+                        this.isLoading = true;
                       this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
                         .subscribe((data) => {
                           console.log(data);
+                            this.isLoading = false;
 
                           this.router.navigate(
                             ['/results'],
@@ -114,10 +117,12 @@ export class InfosComponent implements OnInit {
           else {
             console.log('Directory does not exist');
 
-            // TODO EXECUTE SCRIPTS WITH DATES START AND END 
+            // TODO EXECUTE SCRIPTS WITH DATES START AND END
+              this.isLoading = true;
             this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
               .subscribe((data) => {
                 console.log(data);
+                  this.isLoading = false;
 
                 this.router.navigate(
                   ['/results'],
@@ -133,7 +138,6 @@ export class InfosComponent implements OnInit {
           }
         })
 
-      // 
     }
 
   }
