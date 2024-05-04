@@ -27,7 +27,7 @@ if __name__ == '__main__':
     list_files_zip = list_files_zip.split(' ')
 
     # OUPTUT PATH TIF
-    output_path_tif = os.path.abspath(os.path.join(current_path, '../../images/imagesTIF/'))
+    output_path_tif = os.path.abspath(os.path.join(current_path, '../../frontend/src/assets/imagesTIF/'))
 
     # POLYGON FOLDER 
     polygon_folder_name = polygon.lower().replace(" ", "_")

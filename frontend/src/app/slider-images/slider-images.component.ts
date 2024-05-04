@@ -1,5 +1,10 @@
 import { Component, ElementRef, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { AmplitudeService } from '../services/amplitude.service'; // Import the AmplitudeService
+import { AmplitudeService } from '../services/amplitude.service';
+import {PolygonService} from "../services/polygon.service"; // Import the AmplitudeService
+import { ActivatedRoute } from '@angular/router';
+import {ImageService} from "../services/image.service";
+import { Image } from '../models/image.model';
+import * as postcss from 'postcss';
 
 
 @Component({
@@ -10,7 +15,9 @@ import { AmplitudeService } from '../services/amplitude.service'; // Import the 
 })
 export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  constructor(private amplitudeService: AmplitudeService) { } // Inject the AmplitudeService
+  constructor(private amplitudeService: AmplitudeService,
+              private imageService: ImageService,
+              private route: ActivatedRoute) { } // Inject the AmplitudeService
 
 
   @ViewChild('imageContainer') imageContainer!: ElementRef;
@@ -18,13 +25,46 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sliderImage') sliderImage!: ElementRef;
   @ViewChild('cercle') cercle!: ElementRef;
 
-  imageSrc = 'assets/images/imagesPNG/image1VH.png';
-  sliderValue = 'image1VH.png'; // Initial value
+  imageSrc = '';
+  sliderValue = 'image1V.png'; // Initial value
+  maxSliderValue = 0;
+
+  polygonFinal = '';
+  listDates: string[] = [];
+  listImages: Image[] = [];
 
   circle: HTMLDivElement | null = null; // Variable pour stocker le cercle actuel
 
   ngOnInit() {
+    this.route.queryParamMap.subscribe(params => {
+      let polygon = params.get('polygon')?.toString();
+      let dateStart = params.get('dateStart')?.toString();
+      let dateEnd = params.get('dateEnd')?.toString();
+      if (polygon && dateStart && dateEnd) {
+        this.imageService.getListDatesImagesASFBetweenDates(polygon, dateStart, dateEnd)
+            .subscribe((data) => {
+              this.listDates = data;
+              this.listDates.reverse(); // Inverse l'ordre de la liste
+            });
+        this.imageService.getListImagesLocalBetweenDates(polygon, dateStart, dateEnd)
+            .subscribe((data) => {
+              this.listImages = data;
+            });
+        console.log(this.listDates);
+        console.log(this.listImages);
 
+
+
+        polygon = polygon.replace(/ /g, "_").toLowerCase();
+        console.log(polygon);
+
+        this.maxSliderValue = this.listDates.length - 1;
+        this.imageSrc = `../../assets/imagesTIF/${polygon}/png/${this.listImages[0].name.toString().replace('.tif', '_VV.png')}`;
+
+        this.polygonFinal = polygon;
+
+      }
+    });
   }
   ngAfterViewInit() {
 
@@ -57,6 +97,8 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
       // Ajouter le cercle à l'image
       document.body.appendChild(this.circle);
 
+      let stringDates = this.listDates.join(' ');
+
 
       // Faire une requête HTTP POST à l'URL du contrôleur avec un corps de requête
       fetch('http://localhost:3000/api/script/execute-modification-graph-amplitude-script', {
@@ -65,8 +107,8 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          listeDates : "2023-03-14 2023-03-15 2023-03-22 2023-03-26",
-          outputPathPolygonFolder : "/Users/mathieu/Etudes/IDU4/S8/Projet_IDU/PROJ831_Image_Amplitude/frontend/src/assets/images/imagesTIF/",
+          listeDates : stringDates,
+          polygon : this.polygonFinal,
           coordinates : adjustedX + " " + adjustedY
         })
       })
@@ -88,7 +130,8 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
     if (e) {
       const target = e as HTMLInputElement;
       const value = target.value;
-      this.imageSrc = `assets/images/imagesPNG/image${value}VH.png`;
+
+      this.imageSrc = `../../assets/imagesTIF/${this.polygonFinal}/png/${this.listImages[parseInt(value)].name.toString().replace('.tif', '_VV.png')}`;
       this.sliderValue = `image${value}VH.png`; // Update sliderValue
     }
   }

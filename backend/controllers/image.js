@@ -8,7 +8,7 @@ exports.isTIFDirectoryExist = (req, res, next) => {
 
     nameDirectory = req.params.nameDirectory;
   
-    absolutePath = path.join(__dirname, `../../images/imagesTIF/${nameDirectory}`);
+    absolutePath = path.join(__dirname, `../../frontend/src/assets/imagesTIF/${nameDirectory}`);
   
     // console.log(absolutePath);
 
@@ -55,7 +55,7 @@ exports.getNbImagesLocalBetweenDates = (req, res, next) => {
     dateStart = req.query.dateStart;
     dateEnd = req.query.dateEnd;
 
-    absolutePath = path.join(__dirname, `../../images/imagesTIF/${nameDirectory}/`);
+    absolutePath = path.join(__dirname, `../../frontend/src/assets/imagesTIF/${nameDirectory}/`);
 
     
     try {
@@ -96,7 +96,7 @@ exports.getListImagesLocalBetweenDates = (req, res, next) => {
     dateStart = req.query.dateStart;
     dateEnd = req.query.dateEnd;
 
-    absolutePathFolder = path.join(__dirname, `../../images/imagesTIF/${nameDirectory}/`);
+    absolutePathFolder = path.join(__dirname, `../../frontend/src/assets/imagesTIF/${nameDirectory}/`);
 
     try {
         // Read all files in the directory

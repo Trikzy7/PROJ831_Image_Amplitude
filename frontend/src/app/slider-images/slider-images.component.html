@@ -1,6 +1,6 @@
 <div id="body-slider">
     <div class="slider-container">
-        <input type="range" min="1" max="4" value="1" step="1" class="slider" id="mySlider" (input)="changeImage($event.target)">
+        <input type="range" min="0" [max]="maxSliderValue" value="1" step="1" class="slider" id="mySlider" (input)="changeImage($event.target)">
 <!--        <div class="slider-value" id="sliderValue">{{sliderValue}}</div>-->
     </div>
     <div id="image-container" #imageContainer>

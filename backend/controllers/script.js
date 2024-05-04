@@ -43,7 +43,7 @@ exports.executeAmplitudeScripts = (req, res, next) => {
             }
             console.log('process.py terminé avec succès.');
 
-            let inputtPathTif = path.join(__dirname, `../../images/imagesTIF/${polygon.replace(/\s/g, '_')}`) + '/';
+            let inputtPathTif = path.join(__dirname, `../../frontend/src/assets/imagesTIF/${polygon.replace(/\s/g, '_')}`) + '/';
             cmdTifToPngScript = `python3.10 ${path.join(__dirname, '../script/tifToPng.py')} --inputPathTif '${inputtPathTif}'`;
 
 
@@ -66,7 +66,8 @@ exports.executeAmplitudeScripts = (req, res, next) => {
 // MODIFICATION GRAPH AMPLITUDE SCRIPTS
 exports.executeModificationGraphAmplitudeScript = (req, res, next) => {
     listeDates = req.body.listeDates;
-    outputPathPolygonFolder = req.body.outputPathPolygonFolder;
+    polygon = req.body.polygon;
+    outputPathPolygonFolder = path.join(__dirname, `../../frontend/src/assets/imagesTIF/${polygon}`);
     coordinates = req.body.coordinates;
     outputPathJsonValue = path.join(__dirname, '../../frontend/src/assets/');
 
@@ -95,7 +96,7 @@ exports.executeAmplitudeProcessAndConvertScript = (req, res, next) => {
 
     let nameFilesZip = listInputPathZip.join(' ');
 
-    outputPathTif = path.join(__dirname, `../../images/imagesTIF/${polygon.replace(/\s/g, '_')}`) + '/';
+    outputPathTif = path.join(__dirname, `../../frontend/src/assets/imagesTIF/${polygon.replace(/\s/g, '_')}`) + '/';
     pathGraph = path.join(__dirname, `../finalGraph.xml`);
 
 

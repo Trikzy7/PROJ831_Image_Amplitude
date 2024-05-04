@@ -85,6 +85,15 @@ export class InfosComponent implements OnInit {
                     //-- IF WE HAVE ALL IMAGES IN LOCAL
                     if (listDatesASFImages.length === listLocalImages.length) {
                       console.log('All images .tif are in local');
+                        this.router.navigate(
+                        ['/results'],
+                        {
+                          queryParams: {
+                            polygon: f.value.polygon,
+                            dateStart: this.startDate,
+                            dateEnd: this.endDate
+                          }
+                        });
                     }
                     else {
                       // -- GET LIST OF DATES MISSING
