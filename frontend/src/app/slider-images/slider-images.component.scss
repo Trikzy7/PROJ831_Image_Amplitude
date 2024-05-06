@@ -18,17 +18,12 @@
 
 .slider {
   width: 100%;
+  background-color: white;
 }
 
 .slider-value {
   margin-top: 10px;
   font-size: 18px;
-}
-
-#image-container {
-  //margin-top: 50px;
-  //width: 500px;
-  //height: auto;
 }
 
 #image-container img {
@@ -52,7 +47,6 @@
   width: 300px; /* Largeur de l'overlay correspondant à celle de l'image affichée */
   height: auto; /* Ajuster automatiquement la hauteur en fonction de la largeur pour éviter la distorsion */
 }
-
 
 #titre {
   font-weight: bold;

@@ -6,7 +6,7 @@ import { Router } from "@angular/router";
 import { Image } from '../models/image.model';
 import { scriptService } from '../services/script.service';
 import { ImageService } from '../services/image.service';
-
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-infos',
@@ -49,66 +49,51 @@ export class InfosComponent implements OnInit {
   onSubmit(f: NgForm) {
     this.noConform = (f.value.gptPath == null || f.value.username == null || f.value.password == null || f.value.polygon == null) || (f.value.gptPath == "" || f.value.username == "" || f.value.password == "" || f.value.polygon == "");
     this.submit = true;
-    console.log(f.value)
 
     if (!this.noConform) {
-      // this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath)
-      //   .subscribe((data) => {
-      //     console.log(data.text);
-      //   })
+
+    // Afficher une boîte de dialogue de confirmation
+    Swal.fire({
+        title: 'Are you sure ?',
+        text: "Do you really want to start the process ?",
+        icon: 'warning',
+        iconColor: '#7300ff',
+        showCancelButton: true,
+        confirmButtonColor: '#7300ff',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+          // -- PROCESS CHECKING IF WE HAVE ALREADY ALL IMAGES IN LOCAL
+          this.imageService.isTIFDirectoryExist(f.value.polygon)
+            .subscribe((isTIFDirectoryExist) => {
+
+              // -- CHECK IF DIRECTORY EXIST
+              if (isTIFDirectoryExist.directoryExist) {
+                console.log('Directory exist');
+
+                //-- CHECK IF ALL IMAGES WANTED ARE PROCESSED
+                //-- GET NUMBER OF IMAGES BETWEEN DATES IN ASF (true number of images)
+                this.imageService.getListDatesImagesASFBetweenDates(f.value.polygon, this.startDate, this.endDate)
+                  .subscribe((listDatesASFImages) => {
+                    console.log(listDatesASFImages);
+
+                    //-- GET LIST OF IMAGES BETWEEN DATES
+                    this.imageService.getListImagesLocalBetweenDates(f.value.polygon, this.startDate, this.endDate)
+                      .subscribe((listLocalImages) => {
+                        console.log('prout 💨');
+                        console.log(listLocalImages);
+
+                        this.listLocalImages = listLocalImages;
+                        console.log(this.listLocalImages);
 
 
-      // -- PROCESS CHECKING IF WE HAVE ALREADY ALL IMAGES IN LOCAL
-      this.imageService.isTIFDirectoryExist(f.value.polygon)
-        .subscribe((isTIFDirectoryExist) => {
-
-          // -- CHECK IF DIRECTORY EXIST        
-          if (isTIFDirectoryExist.directoryExist) {
-            console.log('Directory exist');
-
-            //-- CHECK IF ALL IMAGES WANTED ARE PROCESSED
-            //-- GET NUMBER OF IMAGES BETWEEN DATES IN ASF (true number of images)
-            this.imageService.getListDatesImagesASFBetweenDates(f.value.polygon, this.startDate, this.endDate)
-              .subscribe((listDatesASFImages) => {
-                console.log(listDatesASFImages);
-
-                //-- GET LIST OF IMAGES BETWEEN DATES
-                this.imageService.getListImagesLocalBetweenDates(f.value.polygon, this.startDate, this.endDate)
-                  .subscribe((listLocalImages) => {
-                    console.log('prout 💨');
-                    console.log(listLocalImages);
-
-                    this.listLocalImages = listLocalImages;
-                    console.log(this.listLocalImages);
-
-
-                    //-- IF WE HAVE ALL IMAGES IN LOCAL
-                    if (listDatesASFImages.length === listLocalImages.length) {
-                      console.log('All images .tif are in local');
-                        this.router.navigate(
-                        ['/results'],
-                        {
-                          queryParams: {
-                            polygon: f.value.polygon,
-                            dateStart: this.startDate,
-                            dateEnd: this.endDate
-                          }
-                        });
-                    }
-                    else {
-                      // -- GET LIST OF DATES MISSING
-                      let listDateImagesMissing = this.getListDateImagesMissing(listLocalImages, listDatesASFImages);
-                      console.log(listDateImagesMissing);
-
-                      //TODO EXECUTE SCRIPTS WITH LIST DATES MISSING 
-                      // TODO EXECUTE SCRIPTS WITH DATES START AND END
-                        this.isLoading = true;
-                      this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
-                        .subscribe((data) => {
-                          console.log(data);
-                            this.isLoading = false;
-
-                          this.router.navigate(
+                        //-- IF WE HAVE ALL IMAGES IN LOCAL
+                        if (listDatesASFImages.length === listLocalImages.length) {
+                          console.log('All images .tif are in local');
+                            this.router.navigate(
                             ['/results'],
                             {
                               queryParams: {
@@ -117,36 +102,60 @@ export class InfosComponent implements OnInit {
                                 dateEnd: this.endDate
                               }
                             });
-                        })
+                        }
+                        else {
+                          // -- GET LIST OF DATES MISSING
+                          let listDateImagesMissing = this.getListDateImagesMissing(listLocalImages, listDatesASFImages);
+                          console.log(listDateImagesMissing);
 
-                    }
+                          //TODO EXECUTE SCRIPTS WITH LIST DATES MISSING
+                          // TODO EXECUTE SCRIPTS WITH DATES START AND END
+                            this.isLoading = true;
+                          this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
+                            .subscribe((data) => {
+                              console.log(data);
+                                this.isLoading = false;
+
+                              this.router.navigate(
+                                ['/results'],
+                                {
+                                  queryParams: {
+                                    polygon: f.value.polygon,
+                                    dateStart: this.startDate,
+                                    dateEnd: this.endDate
+                                  }
+                                });
+                            })
+
+                        }
+                      })
                   })
-              })
-          }
-          else {
-            console.log('Directory does not exist');
+              }
+              else {
+                console.log('Directory does not exist');
 
-            // TODO EXECUTE SCRIPTS WITH DATES START AND END
-              this.isLoading = true;
-            this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
-              .subscribe((data) => {
-                console.log(data);
-                  this.isLoading = false;
+                // TODO EXECUTE SCRIPTS WITH DATES START AND END
+                  this.isLoading = true;
+                this.scriptService.executeAmplitudeScripts(f.value.polygon, f.value.username, f.value.password, this.startDate, this.endDate, f.value.gptPath, [])
+                  .subscribe((data) => {
+                    console.log(data);
+                      this.isLoading = false;
 
-                this.router.navigate(
-                  ['/results'],
-                  {
-                    queryParams: {
-                      polygon: f.value.polygon,
-                      dateStart: this.startDate,
-                      dateEnd: this.endDate
-                    }
-                  });
-              })
+                    this.router.navigate(
+                      ['/results'],
+                      {
+                        queryParams: {
+                          polygon: f.value.polygon,
+                          dateStart: this.startDate,
+                          dateEnd: this.endDate
+                        }
+                      });
+                  })
 
-          }
+              }
+            })
+            }
         })
-
     }
 
   }

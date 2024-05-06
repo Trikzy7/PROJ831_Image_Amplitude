@@ -1,6 +1,5 @@
 #save, #delete {
   margin-top: 20px;
-  margin-right: 10px;
   padding: 10px 20px;
   border: 1px solid #7300ff;
   border-radius: 5px;
@@ -8,7 +7,11 @@
   cursor: pointer;
   color: #7300ff;
   font-weight: bold;
-  text-align: center;
+  align-items: center;
+}
+
+#save{
+  margin-right: 10px;
 }
 
 #save:hover, #delete:hover {
@@ -93,6 +96,10 @@ H2, #titreASF {
   background-color: #7300ff;
 }
 
+.mockup-browser .mockup-browser-toolbar .input{
+    background-color: white;
+}
+
 .color-load{
     color: #7300ff;
 }
@@ -100,4 +107,18 @@ H2, #titreASF {
 .personalisation-window{
   border: solid 1px #7300ff;
   box-shadow: 0 0 90px 0 gray;
+}
+
+@keyframes radiomark {
+  0% {
+    background-color: white;
+  }
+  100% {
+    background-color: #7300ff;
+  }
+}
+
+.radio:checked{
+  box-shadow:0 0 0 4px white inset, 0 0 0 4px white inset;
+  animation: radiomark var(--animation-input, 0.2s) forwards;
 }
