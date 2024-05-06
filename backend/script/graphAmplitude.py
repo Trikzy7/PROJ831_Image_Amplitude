@@ -51,18 +51,37 @@ if __name__ == '__main__':
     result = {}
     listTifFinal = []
     i = 0
-    for tif in listFilesTif:
-        # split le nom du fichier par rapport au _,
-        # ne garder que le 4eme élément
-        # à l'intérieur que les 8 premiers caractères
-        # mettre un "-" entre le caractère 4 et 5 et entre le caractère 6 et 7
+    for i in range(len(listFilesTif)):
+        # Get the size of the current file
+        current_file_path = os.path.join(output_path_polygon_folder, listFilesTif[i])
+        current_file_size = os.path.getsize(current_file_path)
 
-        dateTif = tif.split("_")[4][:8][:4] + "-" + tif.split("_")[4][:8][4:6] + "-" + tif.split("_")[4][:8][6:8]
+        # If it's not the first file, get the size of the previous file
+        if i > 0:
+            previous_file_path = os.path.join(output_path_polygon_folder, listFilesTif[i - 1])
+            previous_file_size = os.path.getsize(previous_file_path)
+
+            # Check if the current file size is less than 50% of the previous file size
+            if current_file_size < 0.5 * previous_file_size:
+                print(f"The size of {listFilesTif[i]} is less than 50% of its previous file {listFilesTif[i - 1]}")
+                continue
+
+        # If it's not the last file, get the size of the next file
+        if i < len(listFilesTif) - 1:
+            next_file_path = os.path.join(output_path_polygon_folder, listFilesTif[i + 1])
+            next_file_size = os.path.getsize(next_file_path)
+
+            # Check if the current file size is less than 50% of the next file size
+            if current_file_size < 0.5 * next_file_size:
+                print(f"The size of {listFilesTif[i]} is less than 50% of its next file {listFilesTif[i + 1]}")
+                continue
+
+        dateTif = listFilesTif[i].split("_")[4][:8][:4] + "-" + listFilesTif[i].split("_")[4][:8][4:6] + "-" + listFilesTif[i].split("_")[4][:8][6:8]
 
         if dateTif in liste_dates:
-            listTifFinal.append(tif)
+            listTifFinal.append(listFilesTif[i])
 
-            absolutPath = os.path.join(output_path_polygon_folder, tif)
+            absolutPath = os.path.join(output_path_polygon_folder, listFilesTif[i])
 
             # Charger l'image .tif avec rioxarray
             image = rioxarray.open_rasterio(absolutPath)

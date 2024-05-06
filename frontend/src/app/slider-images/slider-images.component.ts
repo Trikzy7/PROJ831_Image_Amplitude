@@ -4,6 +4,8 @@ import {PolygonService} from "../services/polygon.service"; // Import the Amplit
 import { ActivatedRoute } from '@angular/router';
 import {ImageService} from "../services/image.service";
 import { Image } from '../models/image.model';
+import * as fs from 'fs';
+
 import * as postcss from 'postcss';
 
 
@@ -38,6 +40,9 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   circle: HTMLDivElement | null = null; // Variable pour stocker le cercle actuel
 
+  listeFinalImages !: Image[];
+  listeFinalDates ! : string[];
+
   ngOnInit() {
     this.route.queryParamMap.subscribe(params => {
       let polygon = params.get('polygon')?.toString();
@@ -68,7 +73,59 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.maxSliderValue = this.listDates.length - 1;
         this.imageSrc = `../../assets/imagesTIF/${polygon}/png/${this.listImages[0].name.toString().replace('.tif', '_VV.png')}`;
 
+
         this.polygonFinal = polygon;
+
+
+        let img = document.createElement('img');
+        img.onload = () => {
+          console.log('Largeur de l\'image :', img.width);
+          console.log('Hauteur de l\'image :', img.height);
+        };
+        img.src = this.imageSrc; // Utilisez l'URL de l'image que vous avez déjà définie
+
+
+        this.listeFinalImages = [];
+        this.listeFinalDates = [];
+
+
+        // Step 1: Calculate the average width and height
+        let totalWidth = 0;
+        let totalHeight = 0;
+        this.listImages.forEach(image => {
+          let img = document.createElement('img');
+          img.src = `../../assets/imagesTIF/${polygon}/png/${image.name.toString().replace('.tif', '_VV.png')}`;
+          img.onload = () => {
+            totalWidth += img.width;
+            totalHeight += img.height;
+
+            console.log('Image :', img.width, img.height)
+            // regarder si la largeur ou la hauteur de l'image actuelle est inférieur à l'image d'avant ou après dans la liste s'il y en a
+            if (this.listImages.length > 0) {
+              let previousImage = this.listImages[this.listImages.length - 1];
+              let img2 = document.createElement('img');
+              img2.src = `../../assets/imagesTIF/${polygon}/png/${previousImage.name.toString().replace('.tif', '_VV.png')}`;
+              console.log('Image 2 :', img2.width, img2.height)
+              if (img.width >= img2.width && img.height >= img2.height) {
+                this.listeFinalImages.push(image);
+
+                // rajouter la date dans la liste de date
+                this.listeFinalDates.push(this.listDates[this.listImages.indexOf(image)]);
+
+                // remplacer l'extension .tif par .png directement dans l'extension du fichier
+
+              }
+            }
+
+            console.log(this.listeFinalImages)
+            console.log(this.listeFinalDates)
+
+            this.maxSliderValue = this.listeFinalDates.length - 1;
+            this.imageSrc = `../../assets/imagesTIF/${polygon}/png/${this.listeFinalImages[0].name.toString().replace('.tif', '_VV.png')}`;
+
+          };
+        });
+
 
       }
     });
@@ -139,7 +196,7 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
       const target = e as HTMLInputElement;
       const value = target.value;
 
-      this.imageSrc = `../../assets/imagesTIF/${this.polygonFinal}/png/${this.listImages[parseInt(value)].name.toString().replace('.tif', '_VV.png')}`;
+      this.imageSrc = `../../assets/imagesTIF/${this.polygonFinal}/png/${this.listeFinalImages[parseInt(value)].name.toString().replace('.tif', '_VV.png')}`;
       this.sliderValue = `image${value}VH.png`; // Update sliderValue
     }
   }
