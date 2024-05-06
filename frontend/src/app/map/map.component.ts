@@ -57,7 +57,7 @@ export class MapComponent implements AfterViewInit, OnInit{
   }
 
   ngAfterViewInit() {
-    if (typeof document !== 'undefined' && typeof window !== "undefined") {
+    if (typeof document !== 'undefined' && typeof window !== "undefined" && !this.dashboard) {
       this.initMap();
     }
 
