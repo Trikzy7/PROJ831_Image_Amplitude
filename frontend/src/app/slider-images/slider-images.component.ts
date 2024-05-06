@@ -74,7 +74,7 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   ngAfterViewInit() {
-    this.titre.nativeElement.innerHTML = "Evolution de l'amplitude du signal radar entre " + this.start + " et " + this.end;
+    this.titre.nativeElement.innerHTML = "Change in radar signal amplitude between " + this.start + " and " + this.end;
 
     this.imageContainer.nativeElement.addEventListener('click', (event: MouseEvent) => {
       const rect = this.imageContainer.nativeElement.getBoundingClientRect();

@@ -3,13 +3,14 @@ import { isPlatformBrowser } from '@angular/common';
 import { TimeScale, TimeSeriesScale } from 'chart.js';
 import 'chartjs-adapter-moment';
 import {LinearScale } from 'chart.js';
-import { Chart, LineController, LineElement, PointElement } from 'chart.js';
+import { Chart, Legend, LineController, LineElement, PointElement } from 'chart.js';
 import { HttpClient } from '@angular/common/http';
 Chart.register(TimeScale, TimeSeriesScale);
 Chart.register(LinearScale);
 Chart.register(LineController, LineElement, PointElement);
 import { AmplitudeService } from '../services/amplitude.service'; // Import the AmplitudeService
 
+Chart.register(Legend, TimeScale, TimeSeriesScale, LineController, LineElement, PointElement);
 
 @Component({
   selector: 'app-graph-amplitude',
@@ -95,6 +96,12 @@ export class GraphAmplitudeComponent implements OnInit, AfterViewInit {
           },
           y: {
             beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom', // Position de la légende
           }
         }
       }
