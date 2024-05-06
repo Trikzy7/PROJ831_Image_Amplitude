@@ -24,6 +24,7 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('overlay') overlay!: ElementRef;
   @ViewChild('sliderImage') sliderImage!: ElementRef;
   @ViewChild('cercle') cercle!: ElementRef;
+  @ViewChild('Titre') titre!: ElementRef;
 
   imageSrc = '';
   sliderValue = 'image1V.png'; // Initial value
@@ -32,6 +33,8 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
   polygonFinal = '';
   listDates: string[] = [];
   listImages: Image[] = [];
+  start: string | undefined = '';
+  end: string | undefined = '';
 
   circle: HTMLDivElement | null = null; // Variable pour stocker le cercle actuel
 
@@ -39,7 +42,9 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.route.queryParamMap.subscribe(params => {
       let polygon = params.get('polygon')?.toString();
       let dateStart = params.get('dateStart')?.toString();
+      this.start = dateStart;
       let dateEnd = params.get('dateEnd')?.toString();
+      this.end = dateEnd;
       if (polygon && dateStart && dateEnd) {
         this.imageService.getListDatesImagesASFBetweenDates(polygon, dateStart, dateEnd)
             .subscribe((data) => {
@@ -55,6 +60,8 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
+
+
         polygon = polygon.replace(/ /g, "_").toLowerCase();
         console.log(polygon);
 
@@ -67,6 +74,7 @@ export class SliderImagesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   ngAfterViewInit() {
+    this.titre.nativeElement.innerHTML = "Evolution de l'amplitude du signal radar entre " + this.start + " et " + this.end;
 
     this.imageContainer.nativeElement.addEventListener('click', (event: MouseEvent) => {
       const rect = this.imageContainer.nativeElement.getBoundingClientRect();
