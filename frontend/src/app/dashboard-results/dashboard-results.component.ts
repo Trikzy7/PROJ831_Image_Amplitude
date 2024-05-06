@@ -44,7 +44,15 @@ export class DashboardResultsComponent implements OnInit {
         .subscribe((data) => {
             this.listDateASFImages = data;
         });
-        
+        // Vérifiez si la page a déjà été rechargée
+        if (!localStorage.getItem('reloaded')) {
+            // Si ce n'est pas le cas, rechargez la page et définissez la variable 'reloaded' à 'true'
+            localStorage.setItem('reloaded', 'true');
+            location.reload();
+        } else {
+            // Si la page a déjà été rechargée, réinitialisez la variable 'reloaded'
+            localStorage.removeItem('reloaded');
+        }
     }
 
     onMouseOver(): void {

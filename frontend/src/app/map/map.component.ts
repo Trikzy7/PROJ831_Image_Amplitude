@@ -18,6 +18,8 @@ import {AsyncPipe, NgIf, NgOptimizedImage} from "@angular/common";
 import {DashboardService} from "../services/dashboard.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {toLonLat} from 'ol/proj';
+import { ActivatedRoute } from '@angular/router';
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -37,12 +39,21 @@ export class MapComponent implements AfterViewInit, OnInit{
   draw!: Draw;
   vectorLayer!: VectorLayer<any>;
   polygon = "";
+  polygonAffiche!: string | null;
   map_dashboard!: Map;
   dashboard!: boolean;
 
-  constructor(private polygonService: PolygonService, private http: HttpClient, protected dashboardService: DashboardService, private cdr: ChangeDetectorRef) {}
+  constructor(private polygonService: PolygonService, private http: HttpClient, protected dashboardService: DashboardService, private cdr: ChangeDetectorRef, private route: ActivatedRoute) {}
   ngOnInit() {
     this.dashboard = this.dashboardService.getIsOnDashboard();
+    if (this.dashboard){
+      console.log("dashboard")
+      this.route.queryParamMap.subscribe(params => {
+        this.polygonAffiche = params.get('polygon');
+        this.initMap();
+        this.drawPolygonDash(this.polygonAffiche!);
+      });
+    }
   }
 
   ngAfterViewInit() {
@@ -54,7 +65,7 @@ export class MapComponent implements AfterViewInit, OnInit{
       this.polygonService.polygon$.subscribe(polygon => {
         this.polygon = polygon;
         if (this.map_dashboard) {
-          this.drawPolygon(polygon);
+          this.drawPolygonDash(polygon);
         }
         this.cdr.detectChanges();
       });
@@ -103,7 +114,7 @@ export class MapComponent implements AfterViewInit, OnInit{
 
     this.polygonService.polygon$.subscribe(polygon => {
       this.polygon = polygon;
-      this.drawPolygon(polygon);
+      this.drawPolygonDash(polygon);
     });
 
     const source = new VectorSource({ wrapX: false });
@@ -150,6 +161,7 @@ export class MapComponent implements AfterViewInit, OnInit{
   }
 
   private drawPolygon(polygon: string) {
+    console.log(polygon)
     if (!this.vectorLayer) {
       return;
     }
@@ -169,6 +181,34 @@ export class MapComponent implements AfterViewInit, OnInit{
     this.map.getView().fit(polygonExtent, { padding: [100, 100, 100, 100] });
     this.map_dashboard.getView().fit(polygonExtent, { padding: [100, 100, 100, 100] });
     this.map_dashboard.addLayer(this.vectorLayer);
+  }
+
+  private drawPolygonDash(polygon: string) {
+    console.log(polygon)
+    if (!this.vectorLayer || !polygon) {
+      return;
+    }
+
+    this.vectorLayer.getSource().clear()
+    const polygonCoords = this.parsePolygonCoordinates(polygon)
+    if (polygonCoords.length === 0) {
+      return;
+    }
+    const projectedPolygonCoords = polygonCoords.map(coord => fromLonLat(coord)); // Convertir en coordonnées de la projection de la carte
+    const polygonGeometry = new Polygon([projectedPolygonCoords]);
+    const polygonFeature = new Feature({
+      geometry: polygonGeometry
+    });
+
+    this.vectorLayer.getSource().addFeature(polygonFeature);
+
+    // Zoom sur le polygone
+    const polygonExtent = polygonGeometry.getExtent();
+    if (polygonExtent) {
+      this.map.getView().fit(polygonExtent, { padding: [100, 100, 100, 100] });
+      this.map_dashboard.getView().fit(polygonExtent, { padding: [100, 100, 100, 100] });
+      this.map_dashboard.addLayer(this.vectorLayer);
+    }
   }
 
 

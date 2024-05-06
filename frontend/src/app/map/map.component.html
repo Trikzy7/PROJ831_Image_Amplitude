@@ -19,7 +19,7 @@
             <div class="input-group">
                 <label class="input-group__label" for="polygon">GPS Coordinates</label>
                 <div class="flex">
-                    <input type="text" id="polygon" name="polygon" class="input-group__input shadow-xl" value="" [(ngModel)]="polygon" readonly/>
+                    <input type="text" id="polygon" name="polygon" class="input-group__input shadow-xl" value="" [(ngModel)]="polygonAffiche" readonly/>
                     <button (click)="copyToClipboard('polygon')">
                         <img ngSrc="assets/copy-icon.svg" alt="Copy to clipboard" height="20" width="20" title="Copy polygon" class="m-2">
                     </button>
